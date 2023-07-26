@@ -1,0 +1,15 @@
+﻿@model Role
+<a asp-action="Index" class="btn btn-secondary my-1">Back To Role</a>
+<h2>Edit Role</h2>
+
+
+<form asp-action="Edit" asp-controller="Role">
+    @Html.HiddenFor(model => model.RoleID)
+    <div class="form-group">
+        <label asp-for="RoleName">Role Name:</label>
+        <input asp-for="RoleName" class="form-control" />
+        <span asp-validation-for="RoleName" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>

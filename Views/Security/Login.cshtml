@@ -1,0 +1,49 @@
+﻿@model LoginModel
+
+@*<h2>Login</h2>
+
+@using (Html.BeginForm("Login", "Security", FormMethod.Post))
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.Username)
+        @Html.TextBoxFor(m => m.Username, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Username)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Password)
+        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Password)
+    </div>
+
+    <button type="submit" class="btn btn-primary">Login</button>
+}*@
+
+
+<h1 class="row justify-content-center">Log In</h1>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="post" action="login">
+                <hr />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Username" class="form-label"></label>
+                    <input asp-for="Username" class="form-control" autocomplete="off" aria-required="true" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input type="password" asp-for="Password" class="form-control" autocomplete="off" aria-required="true" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <button id="login-submit" type="submit" class="w-100 btn btn-primary">Log in</button>
+
+            </form>
+        </div>
+    </div>
+</div>
+

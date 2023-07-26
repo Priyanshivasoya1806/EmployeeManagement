@@ -1,0 +1,51 @@
+﻿@model Employee
+<a asp-action="Index" class="btn btn-secondary my-1">Back To List</a>
+@{
+    ViewData["Title"] = "Edit Employee";
+}
+
+<h1>Edit</h1>
+
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="EmployeeID" />
+            <div class="mb-3">
+                <label class="form-label" asp-for="FirstName">First Name</label>
+                <input type="text" class="form-control" asp-for="FirstName">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" asp-for="LastName">Last Name</label>
+                <input type="text" class="form-control" asp-for="LastName">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" asp-for="DepartmentID">DepartmentID</label>
+                <input type="text" class="form-control" asp-for="DepartmentID">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" asp-for="Salary">Salary</label>
+                <input type="text" class="form-control" asp-for="Salary">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" asp-for="Email">Email</label>
+                <input type="email" class="form-control" asp-for="Email">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" asp-for="Password">Password</label>
+                <input type="password" class="form-control" asp-for="Password">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" asp-for="UserName">UserName</label>
+                <input type="text" class="form-control" asp-for="UserName">
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+

@@ -1,0 +1,26 @@
+﻿@model int
+
+<a asp-action="Index" asp-controller="Employee" class="btn btn-secondary my-1">Back To Employee</a>
+
+<h2>Manage Roles and Permissions</h2>
+
+<h3>Assign Roles to User</h3>
+@using (Html.BeginForm("AssignRolesToUser", "RolePermission", FormMethod.Post))
+{
+    <div>
+        <input type="hidden" name="EmployeeID" value="@ViewBag.EmployeeID" />
+        <label>Select Roles:</label>
+        <br />
+        @foreach (var role in ViewBag.Roles)
+        {
+            <input type="checkbox" name="roleIds" value="@role.RoleID" /> @role.RoleName
+            <br />
+        }
+        <br />
+        <input type="hidden" name="employeeId" value="@Model" />
+        <input class="btn btn-success" type="submit" value="Assign Roles" />
+    </div>
+}
+
+
+

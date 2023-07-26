@@ -1,0 +1,47 @@
+﻿@model IEnumerable<Role>
+@using System.IdentityModel.Tokens.Jwt;
+@using System.Security.Claims;
+
+
+
+@{
+    var authToken = Context.Request.Cookies["authToken"];
+    var handler = new JwtSecurityTokenHandler();
+    var token = handler.ReadJwtToken(authToken);
+    var userRole = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+}
+
+<h2>Roles</h2>
+@if (userRole == "Admin" || userRole == "HR" || userRole == "Director")
+{
+    <a asp-action="Create" class="btn btn-primary">Create New Role</a>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Role ID</th>
+            <th>Role Name</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var role in Model)
+        {
+            <tr>
+                <td>@role.RoleID</td>
+                <td>@role.RoleName</td>
+                @if (userRole == "Admin" || userRole == "HR" || userRole == "Director")
+                {
+                    <td><a asp-action="Edit" asp-route-id="@role.RoleID" class="btn btn-primary">Edit</a></td>
+                    <td><a asp-action="Delete" asp-route-id="@role.RoleID" class="btn btn-danger">Delete</a></td>
+                }
+                @if (userRole == "Admin" || userRole == "Director")
+                {
+                    <td><a asp-action="Index" asp-controller="Permission" asp-route-id="@role.RoleID" class="btn btn-info">Assign Permission</a></td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+

@@ -1,0 +1,137 @@
+﻿@model DataTableParameters
+@using System.IdentityModel.Tokens.Jwt;
+@using System.Security.Claims;
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@{
+    var authToken = Context.Request.Cookies["authToken"]; 
+    var handler = new JwtSecurityTokenHandler();
+    var token = handler.ReadJwtToken(authToken);
+    var userRole = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+}
+
+@section styles{
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+}
+
+@if (userRole == "PM" || userRole == "Admin" || userRole == "HR" || userRole == "Team Lead" || userRole == "Director")
+{
+    <p>
+        <button class="btn btn-primary"><a asp-action="Create" class="text-light text-decoration-none">Create New</a></button>
+    </p>
+}
+
+<div class="my-2">
+    <table class="table table-striped" id="data-table">
+        <thead>
+            <tr>                                                                                                                          
+                <th>Employee ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Department ID</th>
+                <th>Salary</th>
+                <th>Email</th>
+                <th>Username</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+
+    <script>
+        $(document).ready(function () {
+            var dataTable = $('#data-table').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "@Url.Action("LoadEmployees", "Employee")",
+                    "type": "POST",
+                    "dataType": "json",
+                    "data": function (d) {
+                        d.startIndex = d.start;
+                        d.pageSize = d.length;
+                        d.searchValue = d.search.value;
+                        d.sortColumn = d.columns[d.order[0].column].data;
+                        d.sortDirection = d.order[0].dir;
+                    },
+                    "dataSrc": "employees"
+                },
+                "columns": [
+                    { "data": "employeeID", "sortable": true },
+                    { "data": "firstName", "sortable": true },
+                    { "data": "lastName", "sortable": true },
+                    { "data": "departmentID", "sortable": true },
+                    { "data": "salary", "sortable": true },
+                    { "data": "email", "sortable": true },
+                    { "data": "userName", "sortable": true },
+                    {
+                        "data": null,
+                        "sortable": false,
+                        "render": function (data, type, row) {
+                            var editButton = '<button class="btn btn-primary mx-1"><a href="/Employee/Edit/' + row.employeeID + '" class="text-light text-decoration-none">Edit</a></button>';
+                            var deleteButton = '<button class="btn btn-danger mx-1"><a href="/Employee/Delete/' + row.employeeID + '" class="text-light text-decoration-none">Delete</a></button>';
+                            var assignRoleButton = '<button class="btn btn-info mx-1"><a href="/RolePermission/Index/' + row.employeeID + '" class="text-light text-decoration-none">AssignRole</a></button>';
+
+                            var userRole = '@userRole'; // Replace with the user's role retrieved in the view
+
+                            if (userRole === 'Admin' || userRole === 'HR' || userRole === 'Director') {
+                                return editButton + deleteButton + assignRoleButton;
+                            } else if (userRole === 'PM') {
+                                
+                                return editButton + deleteButton;
+                            } else {
+                                return '';
+                            }
+                        }
+                    }
+                ],
+                "paging": true,
+                "pagingType": "full_numbers",
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                "order": [[0, "asc"]],
+                "language": {
+                    "emptyTable": "No record found.",
+                },
+            });
+
+            $('#data-table_filter input').on('keyup', function () {
+                dataTable.search(this.value).draw();
+            });
+
+                $('#data-table').on('click', 'th', function () {
+                var columnIndex = dataTable.column(this).index();
+                var sortColumn = dataTable.column(columnIndex).dataSrc();
+                var sortDirection = 'asc';
+
+                if ($(this).hasClass('sorting_asc')) {
+                    sortDirection = 'desc';
+                }
+
+                dataTable.order([columnIndex, sortDirection]).draw();
+            });
+
+            dataTable.on('page.dt', function () {
+                dataTable.ajax.reload(null, false);
+            });
+        });
+
+        function handleJsonResponse(response) {
+            var dataTable = $('#data-table').DataTable();
+
+            dataTable.clear().rows.add(response.data).draw();
+            dataTable.page(response.page).draw('page');
+
+            $('#data-table_info').text('Showing ' + response.recordsFiltered + ' of ' + response.recordsTotal + ' records');
+        }
+    </script>
+}
